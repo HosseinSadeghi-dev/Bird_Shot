@@ -17,10 +17,56 @@ class Game:
         self.background = pygame.image.load('assets/Images/background.jpg')
         self.fps = 60
 
+    def choose_gun(self):
+        pygame.init()
+        font = pygame.font.Font('assets/fonts/arial.ttf', 40)
+
+        awp = font.render('1- AWP', True, (255, 255, 255))
+        awp_box = awp.get_rect(center=(self.width / 2, self.height / 2 - 100))
+
+        shotgun = font.render('2- Shotgun', True, (255, 255, 255))
+        shotgun_box = shotgun.get_rect(center=(self.width / 2, self.height / 2 - 50))
+
+        bow = font.render('3- Bow', True, (255, 255, 255))
+        bow_box = bow.get_rect(center=(self.width / 2, self.height / 2 + 0))
+
+        rand = font.render('4- Random', True, (255, 255, 255))
+        random_box = rand.get_rect(center=(self.width / 2, self.height / 2 + 50))
+
+        txt_1 = font.render(f"Esc To Exit", True, (255, 255, 255))
+        text_1 = txt_1.get_rect(center=(self.width / 2, self.height / 2 + 120))
+
+        while True:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_1 or event.key == 1073741913:
+                        return 1
+                    elif event.key == pygame.K_2 or event.key == 1073741914:
+                        return 2
+                    elif event.key == pygame.K_3 or event.key == 1073741915:
+                        return 3
+                    elif event.key == pygame.K_4 or event.key == 1073741916:
+                        return random.choice([1, 2, 3])
+                    elif event.key == pygame.QUIT:
+                        exit()
+
+            self.display.blit(awp, awp_box)
+            self.display.blit(shotgun, shotgun_box)
+            self.display.blit(bow, bow_box)
+            self.display.blit(rand, random_box)
+            self.display.blit(txt_1, text_1)
+            pygame.display.update()
+
     def play(self):
         pygame.mouse.set_visible(False)
 
-        gun = Gun.Gun(self.display, self.width, self.height)
+        gun_choice = self.choose_gun()
+        if gun_choice == 1:
+            gun = Gun.AWP(self.display, self.width, self.height)
+        elif gun_choice == 2:
+            gun = Gun.Shotgun(self.display, self.width, self.height)
+        elif gun_choice == 3:
+            gun = Gun.Bow(self.display, self.width, self.height)
         birds = []
 
         while True:
@@ -34,7 +80,9 @@ class Game:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if gun.ammo > 0:
                         gun.fire(birds)
-                if (event.type == 771) and (gun.ammo < 10):
+                    else:
+                        pygame.mixer.Sound('assets/Sounds/empty_clip.wav').play()
+                if (event.type == 771) and (gun.ammo <= gun.clip_size / 2):
                     gun.reload()
 
             if random.random() < 0.05:
@@ -64,7 +112,7 @@ class Game:
             self.display.blit(gun.bullet, [10, self.height - 60])
             self.display.blit(ammo, ammo_box)
 
-            if gun.ammo < 3:
+            if gun.ammo <= gun.clip_size / 2:
                 reload = self.font.render(f"R To Reload", True, (255, 0, 0))
                 reload_box = score.get_rect(center=(self.width - 80, self.height - 37))
                 self.display.blit(reload, reload_box)

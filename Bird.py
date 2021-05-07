@@ -28,8 +28,12 @@ class Bird:
     def fly(self):
         if self.direction == 'rtl':
             self.x -= self.speed
+            # if not self.is_dead:
+            #     self.y += random.choice([2, 0, -2])
         else:
             self.x += self.speed
+            # if not self.is_dead:
+            #     self.y += random.choice([2, 0, -2])
 
     def get_shot(self):
         self.is_dead = True
