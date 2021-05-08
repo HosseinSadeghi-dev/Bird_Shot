@@ -48,7 +48,7 @@ class Game:
                         return 3
                     elif event.key == pygame.K_4 or event.key == 1073741916:
                         return random.choice([1, 2, 3])
-                    elif event.key == pygame.QUIT:
+                    elif event.key == pygame.QUIT or event.key == pygame.K_ESCAPE:
                         exit()
 
             self.display.blit(awp, awp_box)
@@ -73,8 +73,6 @@ class Game:
         while True:
 
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    exit()
                 if event.type == pygame.MOUSEMOTION:
                     gun.x = pygame.mouse.get_pos()[0]
                     gun.y = pygame.mouse.get_pos()[1]
@@ -86,6 +84,8 @@ class Game:
                 if (event.type == 771) and (gun.ammo <= gun.clip_size / 2):
                     thread = threading.Thread(target=gun.reload, daemon=True)
                     thread.start()
+                if event.type == pygame.KEYDOWN and (event.key == pygame.QUIT or event.key == pygame.K_ESCAPE):
+                    main()
 
             if random.random() < 0.05:
                 if random.random() <= 0.08:
