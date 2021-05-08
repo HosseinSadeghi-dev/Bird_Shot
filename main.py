@@ -3,6 +3,7 @@ import random
 import os
 import Gun
 import Bird
+import threading
 
 
 class Game:
@@ -78,12 +79,13 @@ class Game:
                     gun.x = pygame.mouse.get_pos()[0]
                     gun.y = pygame.mouse.get_pos()[1]
                 if event.type == pygame.MOUSEBUTTONDOWN:
-                    if gun.ammo > 0:
+                    if gun.ammo > 0 and not gun.reloading:
                         gun.fire(birds)
                     else:
                         pygame.mixer.Sound('assets/Sounds/empty_clip.wav').play()
                 if (event.type == 771) and (gun.ammo <= gun.clip_size / 2):
-                    gun.reload()
+                    thread = threading.Thread(target=gun.reload, daemon=True)
+                    thread.start()
 
             if random.random() < 0.05:
                 if random.random() <= 0.08:
@@ -113,7 +115,10 @@ class Game:
             self.display.blit(ammo, ammo_box)
 
             if gun.ammo <= gun.clip_size / 2:
-                reload = self.font.render(f"R To Reload", True, (255, 0, 0))
+                if gun.reloading:
+                    reload = self.font.render(f"RELOADING ...", True, (255, 0, 0))
+                else:
+                    reload = self.font.render(f"R To Reload", True, (255, 0, 0))
                 reload_box = score.get_rect(center=(self.width - 80, self.height - 37))
                 self.display.blit(reload, reload_box)
 

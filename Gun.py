@@ -9,8 +9,11 @@ class Gun:
         self.x = width / 2
         self.y = height / 2
         self.display = display
+        self.width = width
+        self.height = height
         self.score = 0
         self.sound.set_volume(0.15)
+        self.reloading = False
 
         self.ammo = self.ammo
         self.clip_size = self.clip_size
@@ -32,8 +35,10 @@ class Gun:
                 self.score += bird.point
 
     def reload(self):
+        self.reloading = True
         time.sleep(self.reload_time)
         self.ammo = self.clip_size
+        self.reloading = False
 
 
 class Shotgun(Gun):
